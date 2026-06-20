@@ -1,153 +1,63 @@
 import streamlit as st
-import re
-import base64
+import tempfile
+from faster_whisper import WhisperModel
 
 st.set_page_config(
-    page_title="Lyrics Typography Player",
+    page_title="AI Lyrics Typography",
     page_icon="🎵",
     layout="wide"
 )
 
-st.title("🎵 Lyrics Typography Player")
+st.title("🎵 AI Lyrics Typography")
 
 uploaded_audio = st.file_uploader(
     "Upload Lagu MP3",
     type=["mp3"]
 )
 
-lyrics_text = st.text_area(
-    "Masukkan Lirik (Format LRC)",
-    height=250,
-    value="""[00:00] Aku yang dulu
-[00:05] Bukanlah yang sekarang
-[00:10] Kini ku telah kembali
-[00:15] Tak seperti yang dahulu"""
-)
-
 if uploaded_audio:
 
-    audio_bytes = uploaded_audio.read()
+    st.info("Menyimpan file...")
 
-    audio_base64 = base64.b64encode(audio_bytes).decode()
+    with tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=".mp3"
+    ) as tmp:
 
-    pattern = r"\[(\d+):(\d+)\]\s*(.*)"
+        tmp.write(uploaded_audio.read())
+        audio_path = tmp.name
 
-    lyrics = []
+    st.info("Memuat model Whisper...")
 
-    for line in lyrics_text.splitlines():
-
-        match = re.match(pattern, line)
-
-        if match:
-
-            minute = int(match.group(1))
-            second = int(match.group(2))
-            text = match.group(3)
-
-            total_seconds = minute * 60 + second
-
-            lyrics.append({
-                "time": total_seconds,
-                "text": text
-            })
-
-    lyrics_js = str(lyrics).replace("'", '"')
-
-    html_code = f"""
-    <style>
-
-    body {{
-        margin:0;
-        padding:0;
-        background:black;
-        overflow:hidden;
-    }}
-
-    #container {{
-        width:100%;
-        text-align:center;
-        margin-top:40px;
-    }}
-
-    #lyrics {{
-        color:white;
-        font-size:60px;
-        font-weight:bold;
-        min-height:120px;
-        margin-top:50px;
-        text-shadow:
-        0 0 10px white,
-        0 0 20px white;
-        transition:all .3s ease;
-    }}
-
-    audio {{
-        width:80%;
-        margin-top:30px;
-    }}
-
-    </style>
-
-    <div id="container">
-
-        <audio id="audio" controls>
-            <source src="data:audio/mp3;base64,{audio_base64}">
-        </audio>
-
-        <div id="lyrics">
-            Tekan Play
-        </div>
-
-    </div>
-
-    <script>
-
-    const lyrics = {lyrics_js};
-
-    const audio =
-        document.getElementById("audio");
-
-    const lyricBox =
-        document.getElementById("lyrics");
-
-    audio.addEventListener(
-        "timeupdate",
-        () => {{
-
-            const current =
-                audio.currentTime;
-
-            for(let i=0;i<lyrics.length;i++){{
-
-                const currentLine =
-                    lyrics[i];
-
-                const nextLine =
-                    lyrics[i+1];
-
-                if(
-                    current >= currentLine.time &&
-                    (
-                        !nextLine ||
-                        current < nextLine.time
-                    )
-                ){{
-                    lyricBox.innerHTML =
-                        currentLine.text;
-                }}
-            }}
-
-        }}
-    );
-
-    </script>
-    """
-
-    st.components.v1.html(
-        html_code,
-        height=500,
-        scrolling=False
+    model = WhisperModel(
+        "tiny",
+        compute_type="int8"
     )
 
-else:
-    st.info("Upload MP3 terlebih dahulu")
+    st.info("Mentranskripsi lagu...")
+
+    segments, info = model.transcribe(
+        audio_path,
+        beam_size=5
+    )
+
+    lyrics_data = []
+
+    for segment in segments:
+
+        lyrics_data.append({
+            "start": round(segment.start, 2),
+            "end": round(segment.end, 2),
+            "text": segment.text
+        })
+
+    st.success("Transkripsi selesai!")
+
+    for row in lyrics_data:
+
+        st.markdown(
+            f"""
+            **[{row['start']}s]**
+            {row['text']}
+            """
+        )
