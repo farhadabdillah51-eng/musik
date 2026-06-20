@@ -1,1 +1,50 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lyrics Typography Player</title>
 
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>🎵 Lyrics Typography Player</h1>
+
+    <div class="upload-section">
+
+        <label>Upload Lagu (MP3)</label>
+        <input type="file" id="audioFile" accept="audio/*">
+
+        <label>Masukkan Lirik</label>
+
+        <textarea id="lyricsInput" rows="10" placeholder="Format:
+
+0|Aku yang dulu
+5|Bukanlah yang sekarang
+10|Kini ku telah kembali"></textarea>
+
+        <button id="loadBtn">
+            Load Lyrics
+        </button>
+
+    </div>
+
+    <div id="player">
+
+        <div id="lyricDisplay">
+            Klik Play Untuk Memulai
+        </div>
+
+        <audio id="audio" controls></audio>
+
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
