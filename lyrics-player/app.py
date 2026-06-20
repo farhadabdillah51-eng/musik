@@ -1,29 +1,30 @@
 import streamlit as st
-import tempfile
 import os
-
 from modules.transcriber import transcribe_audio
 
 st.set_page_config(
-    page_title="AI Typography Video Generator",
-    page_icon="🎵",
-    layout="wide"
+page_title="AI Typography Video Generator",
+page_icon="🎵",
+layout="wide"
 )
 
-# ==========================
+# ======================
+
 # CSS
-# ==========================
+
+# ======================
 
 st.markdown("""
+
 <style>
 
 .stApp{
-    background:
-    linear-gradient(
-    135deg,
-    #0f172a,
-    #1e293b,
-    #020617);
+    background: linear-gradient(
+        135deg,
+        #0f172a,
+        #1e293b,
+        #020617
+    );
 }
 
 .title{
@@ -31,163 +32,159 @@ st.markdown("""
     color:white;
     font-size:4rem;
     font-weight:800;
+    margin-bottom:20px;
 }
 
-.glass{
-    background:
-    rgba(255,255,255,.08);
-
-    backdrop-filter:
-    blur(20px);
-
-    border:
-    1px solid rgba(
-    255,255,255,.15);
-
-    border-radius:
-    25px;
-
-    padding:
-    25px;
-
-    margin-bottom:
-    20px;
-}
-
-.stButton>button{
-
+.stButton > button{
     width:100%;
-
-    border-radius:
-    999px;
-
-    transition:
-    .3s;
-
+    border-radius:999px;
+    transition:0.3s;
 }
 
-.stButton>button:hover{
-
-    transform:
-    scale(1.04);
-
+.stButton > button:hover{
+    transform:scale(1.04);
 }
 
 </style>
+
 """, unsafe_allow_html=True)
 
-st.markdown(
-    """
-    <div class="title">
-    🎵 AI Typography Generator
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+st.markdown("""
 
-st.write("")
+<div class="title">
+🎵 AI Typography Generator
+</div>
+""", unsafe_allow_html=True)
+
+# ======================
+
+# Folder
+
+# ======================
+
+os.makedirs("uploads", exist_ok=True)
+os.makedirs("output", exist_ok=True)
+
+# ======================
+
+# Upload
+
+# ======================
 
 audio_file = st.file_uploader(
-    "Upload MP3",
-    type=["mp3"]
+"Upload MP3",
+type=["mp3"]
 )
 
 video_file = st.file_uploader(
-    "Upload Background Video",
-    type=["mp4","mov","avi"]
+"Upload Background Video",
+type=["mp4", "mov", "avi"]
 )
+
+audio_path = None
+video_path = None
 
 if audio_file:
 
-    os.makedirs(
-        "uploads",
-        exist_ok=True
-    )
+```
+audio_path = os.path.join(
+    "uploads",
+    audio_file.name
+)
 
-    audio_path = os.path.join(
-        "uploads",
-        audio_file.name
-    )
+with open(audio_path, "wb") as f:
+    f.write(audio_file.read())
 
-    with open(
-        audio_path,
-        "wb"
-    ) as f:
-
-        f.write(
-            audio_file.read()
-        )
-
-    st.success(
-        "MP3 berhasil diupload"
-    )
+st.success(
+    "MP3 berhasil diupload"
+)
+```
 
 if video_file:
 
-    video_path = os.path.join(
-        "uploads",
-        video_file.name
-    )
+```
+video_path = os.path.join(
+    "uploads",
+    video_file.name
+)
 
-    with open(
-        video_path,
-        "wb"
-    ) as f:
+with open(video_path, "wb") as f:
+    f.write(video_file.read())
 
-        f.write(
-            video_file.read()
-        )
+st.success(
+    "Video berhasil diupload"
+)
+```
 
-    st.success(
-        "Video berhasil diupload"
-    )
+# ======================
 
-if audio_file:
+# Generate Lyrics
 
-    if st.button(
-        "🎤 Generate Lyrics"
+# ======================
+
+if audio_path:
+
+```
+if st.button(
+    "🎤 Generate Lyrics"
+):
+
+    with st.spinner(
+        "Whisper sedang bekerja..."
     ):
 
-        with st.spinner(
-            "Whisper sedang bekerja..."
-        ):
-
-            result = transcribe_audio(
-                audio_path
-            )
-
-        st.session_state[
-            "lyrics"
-        ] = result
-
-        st.success(
-            "Transkripsi selesai"
+        result = transcribe_audio(
+            audio_path
         )
+
+    st.session_state[
+        "lyrics"
+    ] = result
+
+    st.success(
+        "Transkripsi selesai"
+    )
+```
+
+# ======================
+
+# Tampilkan Hasil
+
+# ======================
 
 if "lyrics" in st.session_state:
 
-    st.subheader(
-        "Hasil Transkripsi"
+```
+st.subheader(
+    "Hasil Transkripsi"
+)
+
+for item in st.session_state[
+    "lyrics"
+]:
+
+    st.write(
+        f"[{item['start']:.2f}s] {item['text']}"
     )
+```
 
-    for item in st.session_state[
-        "lyrics"
-    ]:
+# ======================
 
-        st.write(
-            f"[{item['start']:.2f}s] {item['text']}"
-        )
+# Generate Video
+
+# ======================
 
 if (
-    "lyrics" in st.session_state
-    and video_file
+"lyrics" in st.session_state
+and video_path
 ):
 
-    if st.button(
-        "🎬 Generate Typography Video"
-    ):
+```
+if st.button(
+    "🎬 Generate Typography Video"
+):
 
-        st.info(
-            "Renderer akan dibuat pada file berikutnya"
-        )
+    st.info(
+        "Renderer belum dihubungkan."
+    )
 ```
