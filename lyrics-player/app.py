@@ -1,63 +1,194 @@
+```python
 import streamlit as st
 import tempfile
-from faster_whisper import WhisperModel
+import os
+
+from modules.transcriber import transcribe_audio
 
 st.set_page_config(
-    page_title="AI Lyrics Typography",
+    page_title="AI Typography Video Generator",
     page_icon="🎵",
     layout="wide"
 )
 
-st.title("🎵 AI Lyrics Typography")
+# ==========================
+# CSS
+# ==========================
 
-uploaded_audio = st.file_uploader(
-    "Upload Lagu MP3",
+st.markdown("""
+<style>
+
+.stApp{
+    background:
+    linear-gradient(
+    135deg,
+    #0f172a,
+    #1e293b,
+    #020617);
+}
+
+.title{
+    text-align:center;
+    color:white;
+    font-size:4rem;
+    font-weight:800;
+}
+
+.glass{
+    background:
+    rgba(255,255,255,.08);
+
+    backdrop-filter:
+    blur(20px);
+
+    border:
+    1px solid rgba(
+    255,255,255,.15);
+
+    border-radius:
+    25px;
+
+    padding:
+    25px;
+
+    margin-bottom:
+    20px;
+}
+
+.stButton>button{
+
+    width:100%;
+
+    border-radius:
+    999px;
+
+    transition:
+    .3s;
+
+}
+
+.stButton>button:hover{
+
+    transform:
+    scale(1.04);
+
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown(
+    """
+    <div class="title">
+    🎵 AI Typography Generator
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+st.write("")
+
+audio_file = st.file_uploader(
+    "Upload MP3",
     type=["mp3"]
 )
 
-if uploaded_audio:
+video_file = st.file_uploader(
+    "Upload Background Video",
+    type=["mp4","mov","avi"]
+)
 
-    st.info("Menyimpan file...")
+if audio_file:
 
-    with tempfile.NamedTemporaryFile(
-        delete=False,
-        suffix=".mp3"
-    ) as tmp:
-
-        tmp.write(uploaded_audio.read())
-        audio_path = tmp.name
-
-    st.info("Memuat model Whisper...")
-
-    model = WhisperModel(
-        "tiny",
-        compute_type="int8"
+    os.makedirs(
+        "uploads",
+        exist_ok=True
     )
 
-    st.info("Mentranskripsi lagu...")
+    audio_path = os.path.join(
+        "uploads",
+        audio_file.name
+    )
 
-    segments, info = model.transcribe(
+    with open(
         audio_path,
-        beam_size=5
+        "wb"
+    ) as f:
+
+        f.write(
+            audio_file.read()
+        )
+
+    st.success(
+        "MP3 berhasil diupload"
     )
 
-    lyrics_data = []
+if video_file:
 
-    for segment in segments:
+    video_path = os.path.join(
+        "uploads",
+        video_file.name
+    )
 
-        lyrics_data.append({
-            "start": round(segment.start, 2),
-            "end": round(segment.end, 2),
-            "text": segment.text
-        })
+    with open(
+        video_path,
+        "wb"
+    ) as f:
 
-    st.success("Transkripsi selesai!")
-
-    for row in lyrics_data:
-
-        st.markdown(
-            f"""
-            **[{row['start']}s]**
-            {row['text']}
-            """
+        f.write(
+            video_file.read()
         )
+
+    st.success(
+        "Video berhasil diupload"
+    )
+
+if audio_file:
+
+    if st.button(
+        "🎤 Generate Lyrics"
+    ):
+
+        with st.spinner(
+            "Whisper sedang bekerja..."
+        ):
+
+            result = transcribe_audio(
+                audio_path
+            )
+
+        st.session_state[
+            "lyrics"
+        ] = result
+
+        st.success(
+            "Transkripsi selesai"
+        )
+
+if "lyrics" in st.session_state:
+
+    st.subheader(
+        "Hasil Transkripsi"
+    )
+
+    for item in st.session_state[
+        "lyrics"
+    ]:
+
+        st.write(
+            f"[{item['start']:.2f}s] {item['text']}"
+        )
+
+if (
+    "lyrics" in st.session_state
+    and video_file
+):
+
+    if st.button(
+        "🎬 Generate Typography Video"
+    ):
+
+        st.info(
+            "Renderer akan dibuat pada file berikutnya"
+        )
+```
