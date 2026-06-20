@@ -15,10 +15,18 @@ output_path="output/final_video.mp4"
 ):
 
 ```
-os.makedirs("output", exist_ok=True)
+os.makedirs(
+    "output",
+    exist_ok=True
+)
 
-background = VideoFileClip(video_path)
-audio = AudioFileClip(audio_path)
+background = VideoFileClip(
+    video_path
+)
+
+audio = AudioFileClip(
+    audio_path
+)
 
 clips = [background]
 
@@ -36,14 +44,20 @@ for item in lyrics_data:
         txt
         .set_start(item["start"])
         .set_end(item["end"])
-        .set_position(("center","center"))
+        .set_position(
+            ("center","center")
+        )
     )
 
     clips.append(txt)
 
-final = CompositeVideoClip(clips)
+final = CompositeVideoClip(
+    clips
+)
 
-final = final.set_audio(audio)
+final = final.set_audio(
+    audio
+)
 
 final.write_videofile(
     output_path,
