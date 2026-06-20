@@ -1,11 +1,7 @@
-```txt
 streamlit
-faster-whisper
-moviepy
+faster-whisper==1.0.3
+moviepy==1.0.3
 pillow
 numpy
-ffmpeg-python
-av
 imageio
 imageio-ffmpeg
-```
