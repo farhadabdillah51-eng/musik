@@ -1,4 +1,11 @@
+```txt
 streamlit
 faster-whisper
+moviepy
+pillow
+numpy
 ffmpeg-python
 av
+imageio
+imageio-ffmpeg
+```
