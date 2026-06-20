@@ -1,85 +1,61 @@
 import streamlit as st
 import os
 
+# Konfigurasi halaman
+
 st.set_page_config(
 page_title="AI Typography Video Generator",
 page_icon="🎵",
 layout="wide"
 )
 
-# ==========================
-
-# STYLE
-
-# ==========================
+# CSS
 
 st.markdown("""
 
 <style>
-
-.stApp{
-    background: linear-gradient(
-        135deg,
-        #0f172a,
-        #1e293b,
-        #020617
-    );
+.stApp {
+    background: linear-gradient(135deg,#0f172a,#1e293b,#020617);
 }
 
-.title{
+.title {
     text-align:center;
     color:white;
     font-size:3rem;
     font-weight:bold;
     margin-bottom:20px;
 }
-
-.stButton > button{
-    width:100%;
-    border-radius:999px;
-}
-
 </style>
 
 """, unsafe_allow_html=True)
 
-st.markdown("""
+# Judul
 
-<div class="title">
-🎵 AI Typography Video Generator
-</div>
-""", unsafe_allow_html=True)
+st.markdown(
+'<div class="title">🎵 AI Typography Video Generator</div>',
+unsafe_allow_html=True
+)
 
-# ==========================
-
-# FOLDER
-
-# ==========================
+# Folder
 
 os.makedirs("uploads", exist_ok=True)
 os.makedirs("output", exist_ok=True)
 
-# ==========================
-
-# UPLOAD FILE
-
-# ==========================
+# Upload MP3
 
 audio_file = st.file_uploader(
 "Upload MP3",
 type=["mp3"]
 )
 
+# Upload Video
+
 video_file = st.file_uploader(
 "Upload Background Video",
 type=["mp4", "mov", "avi"]
 )
 
-# ==========================
-
-# AUDIO
-
-# ==========================
+# Simpan MP3
 
 if audio_file is not None:
 
@@ -97,11 +73,7 @@ st.success(
 )
 ```
 
-# ==========================
-
-# VIDEO
-
-# ==========================
+# Simpan Video
 
 if video_file is not None:
 
@@ -119,13 +91,9 @@ st.success(
 )
 ```
 
-# ==========================
+# Status
 
-# STATUS
-
-# ==========================
-
-if audio_file and video_file:
+if audio_file is not None and video_file is not None:
 
 ```
 st.success(
