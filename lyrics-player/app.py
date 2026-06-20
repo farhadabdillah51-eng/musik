@@ -23,12 +23,13 @@ type=["mp4", "mov", "avi"]
 )
 
 if audio_file is not None:
-audio_path = os.path.join(
-"uploads",
-audio_file.name
-)
 
 ```
+audio_path = os.path.join(
+    "uploads",
+    audio_file.name
+)
+
 with open(audio_path, "wb") as f:
     f.write(audio_file.read())
 
@@ -38,12 +39,13 @@ st.success(
 ```
 
 if video_file is not None:
-video_path = os.path.join(
-"uploads",
-video_file.name
-)
 
 ```
+video_path = os.path.join(
+    "uploads",
+    video_file.name
+)
+
 with open(video_path, "wb") as f:
     f.write(video_file.read())
 
