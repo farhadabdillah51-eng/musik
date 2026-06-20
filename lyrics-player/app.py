@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+
 from modules.transcriber import transcribe_audio
 
 st.set_page_config(
@@ -67,7 +68,7 @@ os.makedirs("output", exist_ok=True)
 
 # ======================
 
-# Upload
+# Upload File
 
 # ======================
 
@@ -148,7 +149,7 @@ if st.button(
 
 # ======================
 
-# Tampilkan Hasil
+# Tampilkan Lirik
 
 # ======================
 
@@ -156,7 +157,7 @@ if "lyrics" in st.session_state:
 
 ```
 st.subheader(
-    "Hasil Transkripsi"
+    "📝 Hasil Transkripsi"
 )
 
 for item in st.session_state[
@@ -180,11 +181,15 @@ and video_path
 ):
 
 ```
+st.success(
+    "Lirik dan video siap diproses"
+)
+
 if st.button(
     "🎬 Generate Typography Video"
 ):
 
     st.info(
-        "Renderer belum dihubungkan."
+        "Renderer belum dihubungkan"
     )
 ```
